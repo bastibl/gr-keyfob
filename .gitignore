@@ -1,0 +1,7 @@
+build/*
+utils/bruteforce/output/*
+utils/bruteforce/runs/*
+utils/bruteforce/des
+*.pyc
+apps/keyfob_tx.py
+apps/rtl_rx.py

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<block>
+  <name>manchester_decode</name>
+  <key>keyfob_manchester_decode</key>
+  <category>keyfob</category>
+  <import>import keyfob</import>
+  <make>keyfob.manchester_decode()</make>
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+</block>

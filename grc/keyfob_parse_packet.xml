@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<block>
+  <name>parse_packet</name>
+  <key>keyfob_parse_packet</key>
+  <category>keyfob</category>
+  <import>import keyfob</import>
+  <make>keyfob.parse_packet()</make>
+
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+</block>

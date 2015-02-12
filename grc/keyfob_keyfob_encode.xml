@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<block>
+  <name>keyfob_encode</name>
+  <key>keyfob_keyfob_encode</key>
+  <category>keyfob</category>
+  <import>import keyfob</import>
+  <make>keyfob.keyfob_encode()</make>
+  <sink>
+    <name>in</name>
+    <type>message</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+</block>
