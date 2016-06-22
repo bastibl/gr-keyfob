@@ -2,7 +2,7 @@
 <block>
   <name>keyfob_encode</name>
   <key>keyfob_keyfob_encode</key>
-  <category>keyfob</category>
+  <category>[Keyfob]</category>
   <import>import keyfob</import>
   <make>keyfob.keyfob_encode()</make>
   <sink>

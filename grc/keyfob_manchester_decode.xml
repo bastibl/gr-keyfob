@@ -2,7 +2,7 @@
 <block>
   <name>manchester_decode</name>
   <key>keyfob_manchester_decode</key>
-  <category>keyfob</category>
+  <category>[Keyfob]</category>
   <import>import keyfob</import>
   <make>keyfob.manchester_decode()</make>
   <sink>
