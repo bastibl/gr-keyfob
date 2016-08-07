@@ -33,14 +33,3 @@ GR_PYTHON_INSTALL(
     __init__.py
     manchester_decode.py DESTINATION ${GR_PYTHON_DIR}/keyfob
 )
-
-########################################################################
-# Handle the unit tests
-########################################################################
-include(GrTest)
-
-set(GR_TEST_TARGET_DEPS gnuradio-keyfob)
-set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
-GR_ADD_TEST(qa_manchester_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_manchester_decode.py)
-GR_ADD_TEST(qa_parse_packet ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_parse_packet.py)
-GR_ADD_TEST(qa_keyfob_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_keyfob_encode.py)
