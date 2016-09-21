@@ -64,17 +64,22 @@ namespace gr {
     parse_packet_impl::get_type(const uint8_t *in) {
       static uint8_t head_data[]  = {0, 1, 1, 1, 0, 0, 0, 1};
       static uint8_t head_short[] = {1, 1, 1, 1, 0, 0, 0, 1};
+      static uint8_t head_data_alt[] = {0, 1, 1, 0, 0, 0, 0, 0};
+
       static uint8_t tail_close[] = {0, 0, 1, 0, 1, 0, 1, 0};
       static uint8_t tail_open[]  = {0, 0, 0, 1, 1, 1, 0, 0};
       static uint8_t tail_trunk[] = {0, 1, 0, 0, 0, 1, 1, 0};
       static uint8_t tail_short[] = {0, 0, 0, 1, 1, 1, 0, 0};
+      static uint8_t tail_close_alt[] = {0, 0, 1, 0, 1, 0, 1, 0};
+      static uint8_t tail_open_alt[] = {0, 0, 0, 1, 1, 1, 0, 0};
+      static uint8_t tail_trunk_alt[] = {0, 1, 0, 0, 0, 1, 1, 0};
 
-      if(match(in, head_data, 8)) {
-        if(match(in + 81, tail_close, 8)) {
+      if(match(in, head_data, 8) || match(in, head_data_alt, 8)) {
+        if(match(in + 81, tail_close, 8) || match(in+81, tail_close_alt, 8)) {
           return DATA_CLOSE;
-        } else if(match(in + 81, tail_open, 8)) {
+        } else if(match(in + 81, tail_open, 8) || match(in+81, tail_open_alt, 8)) {
           return DATA_OPEN;
-        } else if(match(in + 81, tail_trunk, 8)) {
+        } else if(match(in + 81, tail_trunk, 8) || match(in+81, tail_trunk_alt, 8)) {
           return DATA_TRUNK;
         }
       } else if(match(in, head_short, 8)) {
