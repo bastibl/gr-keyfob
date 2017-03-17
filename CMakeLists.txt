@@ -103,18 +103,22 @@ endif(APPLE)
 ########################################################################
 # Find gnuradio build dependencies
 ########################################################################
-find_package(CppUnit)
 find_package(Doxygen)
 
-# Search for GNU Radio and its components and versions. Add any
-# components required to the list of GR_REQUIRED_COMPONENTS (in all
-# caps such as FILTER or FFT) and change the version to the minimum
-# API compatible version required.
 set(GR_REQUIRED_COMPONENTS RUNTIME)
 find_package(Gnuradio)
+if(NOT GNURADIO_RUNTIME_FOUND)
+    message(FATAL_ERROR "GNU Radio to compile gr-keyfob")
+endif()
 
+find_package(CppUnit)
 if(NOT CPPUNIT_FOUND)
-    message(FATAL_ERROR "CppUnit required to compile keyfob")
+    message(FATAL_ERROR "CppUnit required to compile gr-keyfob")
+endif()
+
+find_package(SWIG)
+if(NOT SWIG_FOUND)
+    message(FATAL_ERROR "SWIG required to compile gr-keyfob")
 endif()
 
 ########################################################################
