@@ -22,14 +22,15 @@
 This is the GNU Radio KEYFOB module. Place your Python package
 description here (python/__init__.py).
 '''
+from __future__ import unicode_literals
 
 # import swig generated symbols into the keyfob namespace
 try:
-	# this might fail if the module is python-only
-	from keyfob_swig import *
+    # this might fail if the module is python-only
+    from .keyfob_swig import *
 except ImportError:
-	pass
+    pass
 
 # import any pure python here
-from manchester_decode import manchester_decode
+from .manchester_decode import manchester_decode
 #

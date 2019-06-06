@@ -1,6 +1,6 @@
 # Copyright 2011 Free Software Foundation, Inc.
 #
-# This file is part of GNU Radio
+# This file is part of gr-keyfob
 #
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,15 +21,15 @@
 # Check if there is C++ code at all
 ########################################################################
 if(NOT keyfob_sources)
-	MESSAGE(STATUS "No C++ sources... skipping swig/")
-	return()
+    MESSAGE(STATUS "No C++ sources... skipping swig/")
+    return()
 endif(NOT keyfob_sources)
 
 ########################################################################
 # Include swig generation macros
 ########################################################################
 find_package(SWIG)
-find_package(PythonLibs 2)
+find_package(PythonLibs)
 if(NOT SWIG_FOUND OR NOT PYTHONLIBS_FOUND)
     return()
 endif()
@@ -39,11 +39,11 @@ include(GrPython)
 ########################################################################
 # Setup swig generation
 ########################################################################
-foreach(incdir ${GNURADIO_RUNTIME_INCLUDE_DIRS})
-    list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gnuradio/swig)
-endforeach(incdir)
+set(GR_SWIG_INCLUDE_DIRS $<TARGET_PROPERTY:gnuradio::runtime_swig,INTERFACE_INCLUDE_DIRECTORIES>)
+set(GR_SWIG_TARGET_DEPS gnuradio::runtime_swig)
 
 set(GR_SWIG_LIBRARIES gnuradio-keyfob)
+
 set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/keyfob_swig_doc.i)
 set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 

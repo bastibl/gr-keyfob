@@ -1,6 +1,6 @@
 # Copyright 2011,2012 Free Software Foundation, Inc.
 #
-# This file is part of GNU Radio
+# This file is part of gr-keyfob
 #
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,9 +22,6 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND keyfob_sources
     parse_packet_impl.cc
     keyfob_encode_impl.cc
@@ -32,12 +29,16 @@ list(APPEND keyfob_sources
 
 set(keyfob_sources "${keyfob_sources}" PARENT_SCOPE)
 if(NOT keyfob_sources)
-	MESSAGE(STATUS "No C++ sources... skipping lib/")
-	return()
+    MESSAGE(STATUS "No C++ sources... skipping lib/")
+    return()
 endif(NOT keyfob_sources)
 
 add_library(gnuradio-keyfob SHARED ${keyfob_sources})
-target_link_libraries(gnuradio-keyfob ${Boost_LIBRARIES} ${GNURADIO_ALL_LIBRARIES})
+target_link_libraries(gnuradio-keyfob gnuradio::gnuradio-runtime)
+target_include_directories(gnuradio-keyfob
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+    PUBLIC $<INSTALL_INTERFACE:include>
+  )
 set_target_properties(gnuradio-keyfob PROPERTIES DEFINE_SYMBOL "gnuradio_keyfob_EXPORTS")
 
 if(APPLE)
@@ -49,8 +50,22 @@ endif(APPLE)
 ########################################################################
 # Install built library files
 ########################################################################
-install(TARGETS gnuradio-keyfob
-    LIBRARY DESTINATION lib${LIB_SUFFIX} # .so/.dylib file
-    ARCHIVE DESTINATION lib${LIB_SUFFIX} # .lib file
-    RUNTIME DESTINATION bin              # .dll file
+include(GrMiscUtils)
+GR_LIBRARY_FOO(gnuradio-keyfob)
+
+########################################################################
+# Print summary
+########################################################################
+message(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Building for version: ${VERSION} / ${LIBVER}")
+
+########################################################################
+# Build and register unit test
+########################################################################
+include(GrTest)
+
+# If your unit tests require special include paths, add them here
+#include_directories()
+# List all files that contain Boost.UTF unit tests here
+list(APPEND test_keyfob_sources
 )

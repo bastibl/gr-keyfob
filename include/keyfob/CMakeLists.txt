@@ -1,6 +1,6 @@
 # Copyright 2011,2012 Free Software Foundation, Inc.
 #
-# This file is part of GNU Radio
+# This file is part of gr-keyfob
 #
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

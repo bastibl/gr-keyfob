@@ -22,9 +22,10 @@ FIND_LIBRARY(
           /usr/local/lib64
           /usr/lib
           /usr/lib64
-)
+          )
+
+include("${CMAKE_CURRENT_LIST_DIR}/keyfobTarget.cmake")
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(KEYFOB DEFAULT_MSG KEYFOB_LIBRARIES KEYFOB_INCLUDE_DIRS)
 MARK_AS_ADVANCED(KEYFOB_LIBRARIES KEYFOB_INCLUDE_DIRS)
-

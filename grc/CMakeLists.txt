@@ -1,6 +1,6 @@
 # Copyright 2011 Free Software Foundation, Inc.
 #
-# This file is part of GNU Radio
+# This file is part of gr-keyfob
 #
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    keyfob_manchester_decode.xml
-    keyfob_parse_packet.xml
-    keyfob_keyfob_encode.xml DESTINATION share/gnuradio/grc/blocks
+    keyfob_manchester_decode.block.yml
+    keyfob_parse_packet.block.yml
+    keyfob_keyfob_encode.block.yml DESTINATION share/gnuradio/grc/blocks
 )

@@ -1,6 +1,6 @@
 # Copyright 2011 Free Software Foundation, Inc.
 #
-# This file is part of GNU Radio
+# This file is part of gr-keyfob
 #
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,3 +33,11 @@ GR_PYTHON_INSTALL(
     __init__.py
     manchester_decode.py DESTINATION ${GR_PYTHON_DIR}/keyfob
 )
+
+########################################################################
+# Handle the unit tests
+########################################################################
+include(GrTest)
+
+set(GR_TEST_TARGET_DEPS gnuradio-keyfob)
+set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)

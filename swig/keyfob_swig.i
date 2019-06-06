@@ -2,7 +2,7 @@
 
 #define KEYFOB_API
 
-%include "gnuradio.i"			// the common stuff
+%include "gnuradio.i"           // the common stuff
 
 //load generated python docstrings
 %include "keyfob_swig_doc.i"
