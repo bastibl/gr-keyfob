@@ -44,7 +44,7 @@ namespace gr {
         index(0)
     {
         message_port_register_in(pmt::mp("in"));
-        set_msg_handler(pmt::mp("in"), boost::bind(&keyfob_encode_impl::in, this, _1));
+        set_msg_handler(pmt::mp("in"), boost::bind(&keyfob_encode_impl::in, this, boost::placeholders::_1));
     }
 
     keyfob_encode_impl::~keyfob_encode_impl()
