@@ -25,9 +25,9 @@
 #include <gnuradio/attributes.h>
 
 #ifdef gnuradio_keyfob_EXPORTS
-#  define KEYFOB_API __GR_ATTR_EXPORT
+#define KEYFOB_API __GR_ATTR_EXPORT
 #else
-#  define KEYFOB_API __GR_ATTR_IMPORT
+#define KEYFOB_API __GR_ATTR_IMPORT
 #endif
 
 #endif /* INCLUDED_KEYFOB_API_H */
