@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Keyfob Tx
-# GNU Radio version: 3.8tech-preview-381-g27dd99e4
+# GNU Radio version: v3.9.2.0-52-g062aa7a7
 
 from distutils.version import StrictVersion
 
@@ -28,7 +28,9 @@ from gnuradio import blocks
 import pmt
 from gnuradio import digital
 from gnuradio import gr
+from gnuradio.fft import window
 import sys
+import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
@@ -36,12 +38,15 @@ from gnuradio import uhd
 import time
 from gnuradio.filter import pfb
 import keyfob
+
+
+
 from gnuradio import qtgui
 
 class keyfob_tx(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Keyfob Tx")
+        gr.top_block.__init__(self, "Keyfob Tx", catch_exceptions=True)
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Keyfob Tx")
         qtgui.util.check_set_qss()
@@ -86,19 +91,21 @@ class keyfob_tx(gr.top_block, Qt.QWidget):
             uhd.stream_args(
                 cpu_format="fc32",
                 args='',
-                channels=[],
+                channels=list(range(0,1)),
             ),
             '',
         )
+        self.uhd_usrp_sink_0.set_samp_rate(1e6)
+        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec(0))
+
         self.uhd_usrp_sink_0.set_center_freq(434.4e6, 0)
         self.uhd_usrp_sink_0.set_gain(45, 0)
-        self.uhd_usrp_sink_0.set_samp_rate(1e6)
-        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec())
         self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
             1024, #size
             1e6, #samp_rate
             "", #name
-            1 #number of inputs
+            1, #number of inputs
+            None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
         self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
@@ -118,8 +125,8 @@ class keyfob_tx(gr.top_block, Qt.QWidget):
             '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-            "magenta", "yellow", "dark red", "dark green", "blue"]
+        colors = ['blue', 'red', 'green', 'black', 'cyan',
+            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
             1.0, 1.0, 1.0, 1.0, 1.0]
         styles = [1, 1, 1, 1, 1,
@@ -143,7 +150,7 @@ class keyfob_tx(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
         self.pfb_arb_resampler_xxx_0 = pfb.arb_resampler_ccf(
             1000000.0/(baud*sps),
             taps=None,
@@ -176,9 +183,13 @@ class keyfob_tx(gr.top_block, Qt.QWidget):
         self.connect((self.pfb_arb_resampler_xxx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.pfb_arb_resampler_xxx_0, 0), (self.uhd_usrp_sink_0, 0))
 
+
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "keyfob_tx")
         self.settings.setValue("geometry", self.saveGeometry())
+        self.stop()
+        self.wait()
+
         event.accept()
 
     def get_sps(self):
@@ -205,6 +216,7 @@ class keyfob_tx(gr.top_block, Qt.QWidget):
 
 
 
+
 def main(top_block_cls=keyfob_tx, options=None):
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
@@ -213,15 +225,25 @@ def main(top_block_cls=keyfob_tx, options=None):
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls()
+
     tb.start()
+
     tb.show()
 
-    def quitting():
+    def sig_handler(sig=None, frame=None):
         tb.stop()
         tb.wait()
-    qapp.aboutToQuit.connect(quitting)
-    qapp.exec_()
 
+        Qt.QApplication.quit()
+
+    signal.signal(signal.SIGINT, sig_handler)
+    signal.signal(signal.SIGTERM, sig_handler)
+
+    timer = Qt.QTimer()
+    timer.start(500)
+    timer.timeout.connect(lambda: None)
+
+    qapp.exec_()
 
 if __name__ == '__main__':
     main()

@@ -36,7 +36,7 @@ namespace gr {
     class KEYFOB_API keyfob_encode : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<keyfob_encode> sptr;
+      typedef std::shared_ptr<keyfob_encode> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of keyfob::keyfob_encode.

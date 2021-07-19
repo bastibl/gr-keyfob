@@ -34,10 +34,6 @@ class manchester_decode(gr.basic_block):
         self.symbol_now = False
         self.last_bit = 0 
 
-    def forecast(self, noutput_items, ninput_items_required):
-        for i in range(len(ninput_items_required)):
-            ninput_items_required[i] = noutput_items
-
     def general_work(self, input_items, output_items):
         i = 0
         o = 0

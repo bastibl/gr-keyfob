@@ -36,7 +36,7 @@ namespace gr {
     class KEYFOB_API parse_packet : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<parse_packet> sptr;
+      typedef std::shared_ptr<parse_packet> sptr;
 
       /*!
        * \brief Return a shared_ptr to a new instance of keyfob::parse_packet.

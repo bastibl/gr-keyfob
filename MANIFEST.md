@@ -1,16 +1,13 @@
 title: gr-keyfob
-author:
-  - Bastian Bloessl <bloessl@ccs-labs.org>
-copyright_owner:
-  - Bastian Bloessl
-dependencies:
-  - gnuradio (>= 3.7.4)
-repo: https://github.com/bastibl/gr-keyfob.git
+brief: Transceiver for some Hella key fobs
 tags:
   - Key Fob
   - Car
   - Hella
-website: https://github.com/bastibl/gr-keyfob
-brief: A transceiver for some Hella key fobs
+author:
+  - Bastian Bloessl <mail@bastibl.net>
+copyright_owner:
+  - Bastian Bloessl <mail@bastibl.net>
+license: GPL version 3 or later.
+gr_supported_version: v3.7, v3.8, v3.9
 ---
-This is a GNU Radio module to receive and reencode signals of (some) wireless car key fobs from Hella.

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Keyfob Decode Wav
+# Title: Keyfob Rx
 # GNU Radio version: v3.9.2.0-52-g062aa7a7
 
 from distutils.version import StrictVersion
@@ -35,17 +35,19 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.filter import pfb
 import keyfob
+import osmosdr
+import time
 
 
 
 from gnuradio import qtgui
 
-class keyfob_decode_wav(gr.top_block, Qt.QWidget):
+class keyfob_rx(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Keyfob Decode Wav", catch_exceptions=True)
+        gr.top_block.__init__(self, "Keyfob Rx", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("Keyfob Decode Wav")
+        self.setWindowTitle("Keyfob Rx")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -63,7 +65,7 @@ class keyfob_decode_wav(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "keyfob_decode_wav")
+        self.settings = Qt.QSettings("GNU Radio", "keyfob_rx")
 
         try:
             if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
@@ -179,38 +181,60 @@ class keyfob_decode_wav(gr.top_block, Qt.QWidget):
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
         self.pfb_arb_resampler_xxx_0 = pfb.arb_resampler_fff(
-            3400.0*sps/48000,
+            3393.75*sps/1000000.026491,
             taps=None,
             flt_size=32)
         self.pfb_arb_resampler_xxx_0.declare_sample_delay(0)
+        self.osmosdr_source_0 = osmosdr.source(
+            args="numchan=" + str(1) + " " + ''
+        )
+        self.osmosdr_source_0.set_time_unknown_pps(osmosdr.time_spec_t())
+        self.osmosdr_source_0.set_sample_rate(1000000)
+        self.osmosdr_source_0.set_center_freq(434400000, 0)
+        self.osmosdr_source_0.set_freq_corr(0, 0)
+        self.osmosdr_source_0.set_dc_offset_mode(0, 0)
+        self.osmosdr_source_0.set_iq_balance_mode(0, 0)
+        self.osmosdr_source_0.set_gain_mode(False, 0)
+        self.osmosdr_source_0.set_gain(2, 0)
+        self.osmosdr_source_0.set_if_gain(0, 0)
+        self.osmosdr_source_0.set_bb_gain(0, 0)
+        self.osmosdr_source_0.set_antenna('', 0)
+        self.osmosdr_source_0.set_bandwidth(0, 0)
         self.keyfob_parse_packet_0 = keyfob.parse_packet()
         self.keyfob_manchester_decode_0 = keyfob.manchester_decode()
         self.digital_correlate_access_code_tag_xx_0 = digital.correlate_access_code_tag_bb("10101000", 0, 'packet_start')
-        self.digital_clock_recovery_mm_xx_0 = digital.clock_recovery_mm_ff(5*(1+0.0), 0.25*0.175*0.175, 0.5, 0.175, 0.05)
+        self.digital_clock_recovery_mm_xx_0 = digital.clock_recovery_mm_ff(sps*(1+0.0), 0.25*0.175*0.175, 0.5, 0.175, 0.05)
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
-        self.blocks_wavfile_source_0 = blocks.wavfile_source('/home/basti/src/gr-keyfob/gqrx_20150306_154200_434400000.wav', False)
-        self.blocks_throttle_0 = blocks.throttle(gr.sizeof_float*1, samp_rate*3,True)
-        self.blocks_moving_average_xx_1 = blocks.moving_average_ff(sps, 1, 4000, 1)
+        self.blocks_sub_xx_0 = blocks.sub_ff(1)
+        self.blocks_moving_average_xx_1 = blocks.moving_average_ff(sps, 1.0/sps, 4000, 1)
+        self.blocks_moving_average_xx_0 = blocks.moving_average_ff(10000, 1.0/10000, 4000, 1)
+        self.blocks_divide_xx_0 = blocks.divide_ff(1)
+        self.blocks_complex_to_mag_0 = blocks.complex_to_mag(1)
 
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_moving_average_xx_0, 0))
+        self.connect((self.blocks_complex_to_mag_0, 0), (self.blocks_sub_xx_0, 0))
+        self.connect((self.blocks_divide_xx_0, 0), (self.pfb_arb_resampler_xxx_0, 0))
+        self.connect((self.blocks_moving_average_xx_0, 0), (self.blocks_divide_xx_0, 1))
+        self.connect((self.blocks_moving_average_xx_0, 0), (self.blocks_sub_xx_0, 1))
         self.connect((self.blocks_moving_average_xx_1, 0), (self.digital_clock_recovery_mm_xx_0, 0))
         self.connect((self.blocks_moving_average_xx_1, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.pfb_arb_resampler_xxx_0, 0))
-        self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_throttle_0, 0))
+        self.connect((self.blocks_sub_xx_0, 0), (self.blocks_divide_xx_0, 0))
         self.connect((self.digital_binary_slicer_fb_0, 0), (self.keyfob_manchester_decode_0, 0))
         self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.digital_binary_slicer_fb_0, 0))
         self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.qtgui_time_sink_x_1, 0))
         self.connect((self.digital_correlate_access_code_tag_xx_0, 0), (self.keyfob_parse_packet_0, 0))
         self.connect((self.keyfob_manchester_decode_0, 0), (self.digital_correlate_access_code_tag_xx_0, 0))
+        self.connect((self.osmosdr_source_0, 0), (self.blocks_complex_to_mag_0, 0))
         self.connect((self.pfb_arb_resampler_xxx_0, 0), (self.blocks_moving_average_xx_1, 0))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "keyfob_decode_wav")
+        self.settings = Qt.QSettings("GNU Radio", "keyfob_rx")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -222,8 +246,9 @@ class keyfob_decode_wav(gr.top_block, Qt.QWidget):
 
     def set_sps(self, sps):
         self.sps = sps
-        self.blocks_moving_average_xx_1.set_length_and_scale(self.sps, 1)
-        self.pfb_arb_resampler_xxx_0.set_rate(3400.0*self.sps/48000)
+        self.blocks_moving_average_xx_1.set_length_and_scale(self.sps, 1.0/self.sps)
+        self.digital_clock_recovery_mm_xx_0.set_omega(self.sps*(1+0.0))
+        self.pfb_arb_resampler_xxx_0.set_rate(3393.75*self.sps/1000000.026491)
         self.qtgui_time_sink_x_0.set_samp_rate(3400 * self.sps)
 
     def get_samp_rate(self):
@@ -231,12 +256,11 @@ class keyfob_decode_wav(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0.set_sample_rate(self.samp_rate*3)
 
 
 
 
-def main(top_block_cls=keyfob_decode_wav, options=None):
+def main(top_block_cls=keyfob_rx, options=None):
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string('qtgui', 'style', 'raster')
